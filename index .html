@@ -1,0 +1,350 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Моё портфолио — Визитка</title>
+<style>
+:root{--accent:#6c63ff;--bg:#0f1724;--card:#0b1220;--glass:rgba(255,255,255,0.04);--muted:#94a3b8}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef8;background:linear-gradient(180deg,#071124 0%,#07172a 100%);-webkit-font-smoothing:antialiased}
+.app{max-width:1100px;margin:20px auto;padding:18px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#4ac7ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.title{font-size:18px;font-weight:700}
+.subtitle{font-size:13px;color:var(--muted)}
+.menu-btn{border:0;background:transparent;color:var(--muted);font-size:20px;padding:8px;border-radius:8px}
+.nav{display:flex;gap:10px;align-items:center}
+.nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;margin-top:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.about{display:flex;gap:12px;align-items:center}
+.socials{display:flex;gap:8px}
+.socials a{padding:8px;border-radius:8px;background:var(--glass);color:var(--muted);text-decoration:none}
+.controls{display:flex;gap:8px;align-items:center}
+.small{font-size:13px;color:var(--muted)}
+/* Gallery styles */
+.gallery{column-width:240px;column-gap:12px}
+.gallery .photo{break-inside:avoid;margin-bottom:12px;position:relative;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
+.gallery img{width:100%;height:auto;display:block;border-radius:10px}
+.photo:focus{outline:3px solid rgba(108,99,255,0.2)}
+.photo:hover{transform:translateY(-6px);box-shadow:0 8px 22px rgba(12,18,40,0.6)}
+.caption{font-size:12px;color:var(--muted);margin-top:6px}
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(3,6,12,0.85);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;opacity:0;pointer-events:none;transition:opacity .18s}
+.lightbox.show{opacity:1;pointer-events:auto}
+.lightbox img{max-width:95%;max-height:85%;border-radius:8px}
+.lb-close{position:absolute;top:20px;right:20px;background:transparent;border:0;color:#fff;font-size:22px}
+/* Player */
+.player{display:flex;gap:12px;align-items:center}
+.player-cover{width:96px;height:96px;border-radius:10px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,var(--accent),#4ac7ff)}
+.player-meta{flex:1}
+.track-list{margin-top:10px}
+.track{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px}
+.track:hover{background:rgba(255,255,255,0.02)}
+.track.playing{box-shadow:inset 0 0 0 2px rgba(108,99,255,0.06)}
+.controls button{padding:8px;border-radius:10px;border:0;background:var(--glass);color:var(--muted)}
+.progress{height:6px;border-radius:6px;background:rgba(255,255,255,0.04);overflow:hidden}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#4ac7ff)}
+/* Admin */
+.admin-panel{position:fixed;right:18px;bottom:18px;background:var(--card);padding:12px;border-radius:12px;z-index:60;box-shadow:0 6px 18px rgba(3,6,12,0.6)}
+.admin-panel button{padding:8px;border-radius:8px;border:0;background:var(--glass);color:var(--muted);margin:4px}
+.input{display:block;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;width:100%}
+.notice{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);font-size:13px;color:var(--muted)}
+.sort-bar{display:flex;gap:8px;align-items:center;margin-top:8px}
+/* responsive */
+@media (max-width:720px){.logo{width:48px;height:48px}.player-cover{width:72px;height:72px}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden>MV</div>
+      <div>
+        <div class="title" id="ownerName">Имя Фамилия</div>
+        <div class="subtitle small" id="tagline">Музыка • Фотография • Истории</div>
+      </div>
+    </div>
+    <nav class="nav" aria-label="Главное меню">
+      <a href="#about">О себе</a>
+      <a href="#gallery">Галерея</a>
+      <a href="#music">Музыка</a>
+      <button class="menu-btn" id="openAdmin" title="Открыть панель управления">⚙</button>
+    </nav>
+  </header>  <section id="about" class="card about" tabindex="0">
+    <div>
+      <h2>О себе</h2>
+      <p id="aboutText">Краткое описание — расскажите о себе, вашем творчестве и целях. Всё редактируется прямо в интерфейсе.</p>
+      <div class="socials" id="socialLinks" aria-label="Социальные сети">
+        <!-- social links rendered here -->
+      </div>
+    </div>
+  </section>  <section id="gallery" class="card" tabindex="0">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Галерея</h2>
+      <div class="controls">
+        <div class="sort-bar">
+          <label class="small">Сортировка</label>
+          <select id="sortMode" class="input" style="width:150px"><option value="date_desc">По дате (новые сначала)</option><option value="date_asc">По дате (старые сначала)</option><option value="manual">Ручная</option></select>
+          <button id="saveOrder" class="menu-btn" title="Сохранить порядок">💾</button>
+        </div>
+      </div>
+    </div>
+    <div class="gallery" id="galleryGrid" aria-live="polite"></div>
+    <div class="caption small">Можно загружать JPG/PNG до 5 МБ. Поддерживаются изображения разных соотношений — интерфейс адаптирует их.</div>
+  </section>  <section id="music" class="card" tabindex="0">
+    <h2>Музыкальные треки</h2>
+    <div class="player">
+      <div class="player-cover" id="playerCover"></div>
+      <div class="player-meta">
+        <div id="nowTitle">—</div>
+        <div class="small" id="nowAuthor">—</div>
+        <div style="margin-top:8px">
+          <div class="controls">
+            <button id="prevBtn" title="Предыдущий">⏮</button>
+            <button id="playBtn" title="Воспроизвести">▶</button>
+            <button id="nextBtn" title="Следующий">⏭</button>
+          </div>
+          <div style="margin-top:8px" class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i id="progressFill"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="track-list" id="trackList"></div>
+    <div class="caption small">Поддерживаются MP3, WAV, OGG до 10 МБ. Ошибки при загрузке показываются явно.</div>
+  </section>  <div class="lightbox" id="lightbox" role="dialog" aria-hidden="true" tabindex="-1">
+    <button class="lb-close" id="lbClose" aria-label="Закрыть">✕</button>
+    <img src="" alt="" id="lbImg" />
+  </div>  <div class="admin-panel" id="admin" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center"><strong>Панель управления</strong><button id="closeAdmin" class="menu-btn">✕</button></div>
+    <div style="margin-top:8px">
+      <p class="small">Чтобы загружать файлы прямо с сайта, подключите ваш GitHub репозиторий (GitHub Pages). Инструкция ниже.</p>
+      <label class="small">Владелец (GitHub username)</label>
+      <input class="input" id="ghOwner" placeholder="username" />
+      <label class="small">Репозиторий (repo)</label>
+      <input class="input" id="ghRepo" placeholder="my-portfolio" />
+      <label class="small">Ветка (branch)</label>
+      <input class="input" id="ghBranch" placeholder="main" value="main" />
+      <label class="small">Путь для файлов (например assets)</label>
+      <input class="input" id="ghPath" placeholder="assets" value="assets" />
+      <label class="small">GitHub Personal Access Token (создайте с правом public_repo)</label>
+      <input class="input" id="ghToken" placeholder="ghp_..." /><div style="display:flex;gap:8px;margin-top:8px">
+    <label class="small" style="flex:1">Загрузить фото</label>
+    <input type="file" id="uploadImages" accept="image/png,image/jpeg" multiple />
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <label class="small" style="flex:1">Загрузить треки</label>
+    <input type="file" id="uploadTracks" accept="audio/mpeg,audio/ogg,audio/wav" multiple />
+  </div>
+  <div style="margin-top:8px"><button id="saveSettings">Сохранить настройки в localStorage</button></div>
+  <div style="margin-top:8px" id="adminNotice" class="notice">Подсказка: токен хранится локально в браузере только на этом устройстве. Если потеряете телефон — отзовите токен в настройках GitHub.</div>
+</div>
+
+  </div></div><script>
+// == Simple static CMS + uploader using GitHub API ==
+// NOTE: this is intentionally single-file and client-only so you can run and edit from smartphone.
+// Security: PAT (token) is stored only in localStorage for convenience. Create token with 'public_repo' scope for a public repo.
+
+const OWNER_KEY = 'gv_owner', REPO_KEY='gv_repo', BRANCH_KEY='gv_branch', PATH_KEY='gv_path', TOKEN_KEY='gv_token';
+const DATA_PATH = 'data/data.json'; // file in repo storing metadata
+
+// --- utilities ---
+const el = id=>document.getElementById(id);
+function $(sel){return document.querySelector(sel)}
+function apiUrl(owner,repo,path){return `https://api.github.com/repos/${owner}/${repo}/contents/${path}`}
+function rawUrl(owner,repo,branch,path){return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`}
+function ghPagesUrl(owner,repo,path){return `https://${owner}.github.io/${repo}/${path}`}
+function toast(msg){console.log(msg); alert(msg)}
+
+// --- state ---
+let state = {owner:'',repo:'',branch:'main',path:'assets',token:'',data:{photos:[],tracks:[],site:{}}};
+
+// --- init ---
+function loadSettings(){
+  state.owner = localStorage.getItem(OWNER_KEY) || '';
+  state.repo = localStorage.getItem(REPO_KEY) || '';
+  state.branch = localStorage.getItem(BRANCH_KEY) || 'main';
+  state.path = localStorage.getItem(PATH_KEY) || 'assets';
+  state.token = localStorage.getItem(TOKEN_KEY) || '';
+  el('ghOwner').value = state.owner; el('ghRepo').value = state.repo; el('ghBranch').value = state.branch; el('ghPath').value = state.path; el('ghToken').value = state.token;
+}
+
+async function fetchData(){
+  // try to read data/data.json from repo; if not available use local default
+  if(!state.owner||!state.repo) return loadLocalData();
+  try{
+    const url = apiUrl(state.owner,state.repo,DATA_PATH);
+    const res = await fetch(url + `?ref=${state.branch}`);
+    if(res.status===404) return loadLocalData();
+    const obj = await res.json();
+    const content = atob(obj.content.replace(/\n/g,''));
+    state.data = JSON.parse(content);
+    state._data_sha = obj.sha;
+    renderAll();
+  }catch(e){
+    console.warn('fetchData err',e); loadLocalData();
+  }
+}
+function loadLocalData(){
+  state.data = {site:{name:'Имя Фамилия',tagline:'Музыка • Фотография • Истории',about:'Краткое описание — расскажите о себе.'},photos:[],tracks:[],socials:[]};
+  renderAll();
+}
+
+function renderAll(){
+  // site meta
+  el('ownerName').textContent = state.data.site.name || 'Имя Фамилия';
+  el('tagline').textContent = state.data.site.tagline || '';
+  el('aboutText').textContent = state.data.site.about || '';
+  renderSocials();
+  renderGallery();
+  renderTracks();
+}
+
+function renderSocials(){
+  const wrap = el('socialLinks'); wrap.innerHTML=''; (state.data.socials||[]).forEach(s=>{
+    const a = document.createElement('a'); a.href=s.url; a.target='_blank'; a.rel='noopener'; a.textContent = s.label; wrap.appendChild(a);
+  })
+}
+
+function renderGallery(){
+  const g = el('galleryGrid'); g.innerHTML='';
+  const photos = [...(state.data.photos||[])];
+  // sorting mode
+  const mode = el('sortMode').value;
+  if(mode==='date_desc') photos.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(mode==='date_asc') photos.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(mode==='manual') photos = state.data.photos || [];
+  photos.forEach((p,idx)=>{
+    const d = document.createElement('div'); d.className='photo'; d.tabIndex=0; d.dataset.index=idx; d.dataset.id=p.id||p.path;
+    d.innerHTML = `<img src="${p.url}" alt="${p.title||''}" loading="lazy"/><div class="caption">${p.title||''}</div>`;
+    d.addEventListener('click',()=>openLightbox(p.url,p.title));
+    d.addEventListener('keydown',e=>{ if(e.key==='Enter') openLightbox(p.url,p.title) });
+    g.appendChild(d);
+  })
+}
+
+function renderTracks(){
+  const list = el('trackList'); list.innerHTML='';
+  (state.data.tracks||[]).forEach((t,i)=>{
+    const div = document.createElement('div'); div.className='track'; div.tabIndex=0; div.innerHTML = `<div style="flex:1"><strong>${t.title||'Без названия'}</strong><div class="small">${t.artist||''}</div></div><div><button data-i="${i}">▶</button></div>`;
+    div.querySelector('button').addEventListener('click',()=>playTrack(i));
+    list.appendChild(div);
+  })
+}
+
+function openLightbox(url,alt){
+  const lb = el('lightbox'); el('lbImg').src = url; el('lbImg').alt = alt||''; lb.classList.add('show'); lb.setAttribute('aria-hidden','false'); el('lbClose').focus();
+}
+el('lbClose').addEventListener('click',()=>{const lb=el('lightbox');lb.classList.remove('show');lb.setAttribute('aria-hidden','true')});
+
+// --- simple player ---
+let audio = new Audio(); let currentIndex = -1; let progressAnim;
+function playTrack(i){
+  const tracks = state.data.tracks||[]; if(!tracks[i]) return; const t = tracks[i]; if(currentIndex===i && !audio.paused) {audio.pause(); el('playBtn').textContent='▶'; return}
+  audio.src = t.url; audio.play().catch(e=>{toast('Ошибка воспроизведения: '+e)});
+  currentIndex=i; el('nowTitle').textContent = t.title||'Без названия'; el('nowAuthor').textContent = t.artist||''; el('playBtn').textContent='⏸';
+  document.querySelectorAll('.track').forEach((d,idx)=>d.classList.toggle('playing', idx===i));
+}
+el('playBtn').addEventListener('click',()=>{ if(audio.paused){ if(currentIndex<0 && (state.data.tracks||[]).length) playTrack(0); else audio.play(); el('playBtn').textContent='⏸'; } else { audio.pause(); el('playBtn').textContent='▶' } });
+el('prevBtn').addEventListener('click',()=>{ if(currentIndex>0) playTrack(currentIndex-1) }); el('nextBtn').addEventListener('click',()=>{ if(currentIndex < (state.data.tracks||[]).length-1) playTrack(currentIndex+1) });
+
+audio.addEventListener('timeupdate',()=>{
+  const pct = audio.duration? (audio.currentTime/audio.duration)*100 : 0; el('progressFill').style.width = pct + '%';
+});
+
+// --- Admin actions (GitHub upload) ---
+el('openAdmin').addEventListener('click',()=>{el('admin').style.display='block'; el('admin').setAttribute('aria-hidden','false')});
+el('closeAdmin').addEventListener('click',()=>{el('admin').style.display='none'; el('admin').setAttribute('aria-hidden','true')});
+
+el('saveSettings').addEventListener('click',()=>{
+  state.owner = el('ghOwner').value.trim(); state.repo = el('ghRepo').value.trim(); state.branch = el('ghBranch').value.trim()||'main'; state.path = el('ghPath').value.trim()||'assets'; state.token = el('ghToken').value.trim();
+  localStorage.setItem(OWNER_KEY,state.owner); localStorage.setItem(REPO_KEY,state.repo); localStorage.setItem(BRANCH_KEY,state.branch); localStorage.setItem(PATH_KEY,state.path); localStorage.setItem(TOKEN_KEY,state.token);
+  toast('Настройки сохранены локально.'); fetchData();
+});
+
+el('uploadImages').addEventListener('change',async (ev)=>{
+  const files = Array.from(ev.target.files||[]);
+  for(const f of files){
+    if(!['image/jpeg','image/png'].includes(f.type)){ alert(`${f.name}: неподдерживаемый формат`); continue }
+    if(f.size>5*1024*1024){ alert(`${f.name}: превышен лимит 5 МБ`); continue }
+    await uploadFileToRepo(f, `${state.path}/images/${Date.now()}_${sanitize(f.name)}`);
+  }
+  await refreshAfterUpload();
+});
+
+el('uploadTracks').addEventListener('change',async (ev)=>{
+  const files = Array.from(ev.target.files||[]);
+  for(const f of files){
+    if(!['audio/mpeg','audio/ogg','audio/wav'].includes(f.type)){ alert(`${f.name}: неподдерживаемый формат`); continue }
+    if(f.size>10*1024*1024){ alert(`${f.name}: превышен лимит 10 МБ`); continue }
+    await uploadFileToRepo(f, `${state.path}/audio/${Date.now()}_${sanitize(f.name)}`);
+  }
+  await refreshAfterUpload();
+});
+
+function sanitize(name){ return name.replace(/[^a-z0-9.\-\_]/gi,'_') }
+
+async function uploadFileToRepo(file, path){
+  if(!state.owner||!state.repo||!state.token){ alert('Заполните настройки GitHub в панели управления (владелец, репозиторий, токен)'); return }
+  const url = apiUrl(state.owner,state.repo,path);
+  const content = await toBase64(file); // data:*/*;base64,
+  const base64 = content.split(',')[1];
+  const body = {message:`Upload ${path}`,content:base64,branch:state.branch};
+  const r = await fetch(url,{method:'PUT',headers:{Authorization:'token '+state.token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok){
+    console.log('uploaded',path);
+    // create metadata entry in state.data
+    const raw = ghPagesUrl(state.owner,state.repo,`${path}`);
+    if(path.includes('/images/')){
+      state.data.photos = state.data.photos||[];
+      state.data.photos.push({id:Date.now()+Math.random(),title:file.name,url:raw,date:new Date().toISOString(),path});
+    } else if(path.includes('/audio/')){
+      state.data.tracks = state.data.tracks||[];
+      state.data.tracks.push({id:Date.now()+Math.random(),title:file.name,artist:'',url:raw,path});
+    }
+    // save data.json
+    await saveDataJson();
+  } else {
+    const err = await r.json().catch(()=>({message:r.statusText})); alert('Ошибка загрузки: '+(err.message||r.statusText))
+  }
+}
+
+function toBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej; r.readAsDataURL(file)})}
+
+async function saveDataJson(){
+  const path = DATA_PATH; const url = apiUrl(state.owner,state.repo,path);
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(state.data, null, 2))));
+  const body = {message:'Update data.json',content,branch:state.branch};
+  if(state._data_sha) body.sha = state._data_sha;
+  const r = await fetch(url,{method:'PUT',headers:{Authorization:'token '+state.token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok){ const obj = await r.json(); state._data_sha = obj.content.sha; toast('data.json обновлён'); renderAll(); } else { const err = await r.json().catch(()=>({message:r.statusText})); alert('Ошибка сохранения data.json: '+(err.message||r.statusText)) }
+}
+
+async function refreshAfterUpload(){
+  // save data.json to repo already done in upload; fetch latest
+  await fetchData();
+}
+
+// --- load initial ---
+loadSettings(); fetchData();
+
+// sort change
+el('sortMode').addEventListener('change',()=>renderGallery());
+// save order manual
+el('saveOrder').addEventListener('click', async ()=>{
+  // read current DOM order and update state.data.photos accordingly
+  if(el('sortMode').value!=='manual'){ alert('Переключитесь в режим "Ручная" перед сохранением порядка.'); return }
+  const ids = Array.from(document.querySelectorAll('.gallery .photo')).map(d=>d.dataset.id);
+  const map = {}; (state.data.photos||[]).forEach(p=>map[(p.id||p.path)] = p);
+  state.data.photos = ids.map(id=>map[id]).filter(Boolean);
+  await saveDataJson();
+});
+
+// basic keyboard focus trap for admin modal when opened
+// accessibility: ensure elements reachable by keyboard
+
+// small helper: let user download default index (not necessary)
+
+// End of script
+</script></body>
+</html>
